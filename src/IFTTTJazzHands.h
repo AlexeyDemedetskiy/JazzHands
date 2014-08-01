@@ -21,4 +21,7 @@
 #import "IFTTTScaleAnimation.h"
 #import "IFTTTConstraintsAnimation.h"
 
+#import "IFTTTConditionalAnimationProxy.h"
+#import "IFTTTCompoundAnimation.h"
+
 #endif

@@ -16,6 +16,7 @@ static inline CGFloat IFTTTMaxContentOffsetXForScrollView(UIScrollView *scrollVi
 @interface IFTTTAnimatedScrollViewController ()
 
 @property (nonatomic, assign) BOOL isAtEnd;
+@property (nonatomic, assign) NSUInteger currentPage;
 
 @end
 
@@ -53,12 +54,37 @@ static inline CGFloat IFTTTMaxContentOffsetXForScrollView(UIScrollView *scrollVi
     }
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    [self updateCurrentPage];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    [self updateCurrentPage];
+}
+
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
     id delegate = self.delegate;
     
+    if (!decelerate) {
+        [self updateCurrentPage];
+    }
+    
     if (self.isAtEnd && [delegate respondsToSelector:@selector(animatedScrollViewControllerDidEndDraggingAtEnd:)]) {
         [delegate animatedScrollViewControllerDidEndDraggingAtEnd:self];
+    }
+}
+
+- (void)updateCurrentPage
+{
+    NSInteger newPage = self.scrollView.contentOffset.x / self.scrollView.bounds.size.width;
+    if (newPage != self.currentPage) {
+        self.currentPage = newPage;
+        if ([self.delegate respondsToSelector:@selector(animatedScrollViewController:didScrollToPage:)]) {
+            [self.delegate animatedScrollViewController:self didScrollToPage:self.currentPage];
+        }
     }
 }
 

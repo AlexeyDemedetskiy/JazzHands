@@ -5,8 +5,8 @@
 //  Created by willsbor Kang on 7/9/14.
 //
 
-#import "IFTTTAnimation.h"
+#import "IFTTTViewAnimation.h"
 
-@interface IFTTTConstraintsAnimation : IFTTTAnimation
+@interface IFTTTConstraintsAnimation : IFTTTViewAnimation
 
 @end

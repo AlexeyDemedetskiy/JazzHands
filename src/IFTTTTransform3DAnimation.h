@@ -5,7 +5,7 @@
 //  Created by QFish on 3/3/14.
 //
 
-#import "IFTTTAnimation.h"
+#import "IFTTTViewAnimation.h"
 
 struct IFTTTTransform3DTranslate
 {
@@ -42,5 +42,5 @@ typedef struct IFTTTTransform3DRotate IFTTTTransform3DRotate;
 
 @end
 
-@interface IFTTTTransform3DAnimation : IFTTTAnimation
+@interface IFTTTTransform3DAnimation : IFTTTViewAnimation
 @end

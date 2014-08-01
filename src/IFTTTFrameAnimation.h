@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 IFTTT Inc. All rights reserved.
 //
 
-#import "IFTTTAnimation.h"
+#import "IFTTTViewAnimation.h"
 
-@interface IFTTTFrameAnimation : IFTTTAnimation
+@interface IFTTTFrameAnimation : IFTTTViewAnimation
 
 @end

@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 IFTTT Inc. All rights reserved.
 //
 
-#import "IFTTTAnimation.h"
+#import "IFTTTViewAnimation.h"
 
-@interface IFTTTHideAnimation : IFTTTAnimation
+@interface IFTTTHideAnimation : IFTTTViewAnimation
 
 + (instancetype)animationWithView:(UIView *)view hideAt:(NSInteger)time;
 + (instancetype)animationWithView:(UIView *)view showAt:(NSInteger)time;

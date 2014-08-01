@@ -14,10 +14,16 @@
 
 @interface IFTTTJazzHandsViewController ()
 
+@property (strong, nonatomic) UIButton *enableWordmarkButton;
+@property (strong, nonatomic) UIButton *enableUnicornButton;
+
 @property (strong, nonatomic) UIImageView *wordmark;
 @property (strong, nonatomic) UIImageView *unicorn;
 @property (strong, nonatomic) UILabel *lastLabel;
 @property (strong, nonatomic) UILabel *firstLabel;
+
+@property (assign, nonatomic) BOOL wordmarkEnabled;
+@property (assign, nonatomic) BOOL unicornEnabled;
 
 @end
 
@@ -44,6 +50,7 @@
     
     [self placeViews];
     [self configureAnimation];
+    [self lockAnimation];
     
     self.delegate = self;
 }
@@ -75,7 +82,29 @@
     self.firstLabel.text = @"Introducing Jazz Hands";
     [self.firstLabel sizeToFit];
     self.firstLabel.center = self.view.center;
+    
     [self.scrollView addSubview:self.firstLabel];
+    
+    /* Enable watermark */ {
+        self.enableWordmarkButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [self.enableWordmarkButton setTitle:@"Enable watermark" forState:UIControlStateNormal];
+        [self.enableWordmarkButton sizeToFit];
+        self.enableWordmarkButton.center = CGPointMake(self.view.center.x, self.view.center.y + 100);
+        [self.enableWordmarkButton addTarget:self action:@selector(enableWatermark)
+                             forControlEvents:UIControlEventTouchUpInside];
+        
+        [self.scrollView addSubview:self.enableWordmarkButton];
+    }
+    
+    /* Enable unicorne */ {
+        self.enableUnicornButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [self.enableUnicornButton setTitle:@"Enable unicorn" forState:UIControlStateNormal];
+        [self.enableUnicornButton sizeToFit];
+        self.enableUnicornButton.center = CGPointMake(self.view.center.x, self.view.center.y - 100);
+        [self.enableUnicornButton addTarget:self action:@selector(enableUnicorn) forControlEvents:UIControlEventTouchUpInside];
+        
+        [self.scrollView addSubview:self.enableUnicornButton];
+    }
     
     UILabel *secondPageText = [[UILabel alloc] init];
     secondPageText.text = @"Brought to you by IFTTT";
@@ -101,6 +130,35 @@
     self.lastLabel = fourthPageText;
 }
 
+- (void)lockAnimation
+{
+    self.wordmarkEnabled = NO;
+    self.unicornEnabled = NO;
+    
+    self.scrollView.contentSize = CGSizeMake(1 * CGRectGetWidth(self.view.frame),
+                                             CGRectGetHeight(self.view.frame));
+}
+
+- (void)unlockAnimation
+{
+    self.scrollView.contentSize = CGSizeMake(NUMBER_OF_PAGES * CGRectGetWidth(self.view.frame),
+                                             CGRectGetHeight(self.view.frame));
+
+    [self.scrollView setContentOffset:CGPointMake(timeForPage(2), 0) animated:YES];
+}
+
+- (void)enableWatermark
+{
+    self.wordmarkEnabled = YES;
+    [self unlockAnimation];
+}
+
+- (void)enableUnicorn
+{
+    self.unicornEnabled = YES;
+    [self unlockAnimation];
+}
+
 - (void)configureAnimation
 {
     CGFloat dy = 240;
@@ -120,45 +178,61 @@
                                                           andTransform3D:tt2]];
     [labelTransform addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(1.5) + 1
                                                                 andAlpha:0.0f]];
-    [self.animator addAnimation:labelTransform];
 
-    // let's animate the wordmark
-    IFTTTFrameAnimation *wordmarkFrameAnimation = [IFTTTFrameAnimation animationWithView:self.wordmark];
-    [self.animator addAnimation:wordmarkFrameAnimation];
+    /* Wordmark animations */ {
+        self.wordmark.alpha = 0;
+        
+        IFTTTAlphaAnimation* alpha = [IFTTTAlphaAnimation animationWithView:self.wordmark];
+        [alpha addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(1) andAlpha:0.0f]];
+        [alpha addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(2) andAlpha:1.0f]];
+        [alpha addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(3) andAlpha:1.0f]];
+        [alpha addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(4) andAlpha:0.0f]];
 
-    [wordmarkFrameAnimation addKeyFrames:@[
-        [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(1) andFrame:CGRectOffset(self.wordmark.frame, 200, 0)],
-        [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(2) andFrame:self.wordmark.frame],
-        [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(3) andFrame:CGRectOffset(self.wordmark.frame, self.view.frame.size.width, dy)],
-        [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(4) andFrame:CGRectOffset(self.wordmark.frame, 0, dy)],
-    ]];
-
-    // Rotate a full circle from page 2 to 3
-    IFTTTAngleAnimation *wordmarkRotationAnimation = [IFTTTAngleAnimation animationWithView:self.wordmark];
-    [self.animator addAnimation:wordmarkRotationAnimation];
-    [wordmarkRotationAnimation addKeyFrames:@[
-        [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(2) andAngle:0.0f],
-        [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(3) andAngle:(CGFloat)(2 * M_PI)],
-    ]];
+        
+        IFTTTFrameAnimation *wordmarkFrameAnimation = [IFTTTFrameAnimation animationWithView:self.wordmark];
+        [wordmarkFrameAnimation addKeyFrames:@[
+                                               [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(1) andFrame:CGRectOffset(self.wordmark.frame, 200, 0)],
+                                               [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(2) andFrame:self.wordmark.frame],
+                                               [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(3) andFrame:CGRectOffset(self.wordmark.frame, self.view.frame.size.width, dy)],
+                                               [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(4) andFrame:CGRectOffset(self.wordmark.frame, 0, dy)],
+                                               ]];
+        
+        // Rotate a full circle from page 2 to 3
+        IFTTTAngleAnimation *wordmarkRotationAnimation = [IFTTTAngleAnimation animationWithView:self.wordmark];
+        [wordmarkRotationAnimation addKeyFrames:@[
+                                                  [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(2) andAngle:0.0f],
+                                                  [IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(3) andAngle:(CGFloat)(2 * M_PI)],
+                                                  ]];
+        
+        IFTTTAnimation* wordmarkAnimation = [IFTTTAnimation joinAnimations:@[alpha, wordmarkFrameAnimation, wordmarkRotationAnimation]];
+        [self.animator addAnimation:[wordmarkAnimation enabledWhen:^BOOL{
+            return self.wordmarkEnabled;
+        }]];
+    }
     
-    // now, we animate the unicorn
-    IFTTTFrameAnimation *unicornFrameAnimation = [IFTTTFrameAnimation animationWithView:self.unicorn];
-    [self.animator addAnimation:unicornFrameAnimation];
-    
-    CGFloat ds = 50;
-
-    // move down and to the right, and shrink between pages 2 and 3
-    [unicornFrameAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(2) andFrame:self.unicorn.frame]];
-    [unicornFrameAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(3)
+    /* Let's animate unicorn */ {
+        IFTTTFrameAnimation *unicornFrameAnimation = [IFTTTFrameAnimation animationWithView:self.unicorn];
+        
+        CGFloat ds = 50;
+        
+        // move down and to the right, and shrink between pages 2 and 3
+        [unicornFrameAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(2) andFrame:self.unicorn.frame]];
+        [unicornFrameAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(3)
                                                                            andFrame:CGRectOffset(CGRectInset(self.unicorn.frame, ds, ds), timeForPage(2), dy)]];
-    // fade the unicorn in on page 2 and out on page 4
-    IFTTTAlphaAnimation *unicornAlphaAnimation = [IFTTTAlphaAnimation animationWithView:self.unicorn];
-    [self.animator addAnimation:unicornAlphaAnimation];
-    
-    [unicornAlphaAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(1) andAlpha:0.0f]];
-    [unicornAlphaAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(2) andAlpha:1.0f]];
-    [unicornAlphaAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(3) andAlpha:1.0f]];
-    [unicornAlphaAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(4) andAlpha:0.0f]];
+        // fade the unicorn in on page 2 and out on page 4
+        IFTTTAlphaAnimation *unicornAlphaAnimation = [IFTTTAlphaAnimation animationWithView:self.unicorn];
+        
+        [unicornAlphaAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(1) andAlpha:0.0f]];
+        [unicornAlphaAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(2) andAlpha:1.0f]];
+        [unicornAlphaAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(3) andAlpha:1.0f]];
+        [unicornAlphaAnimation addKeyFrame:[IFTTTAnimationKeyFrame keyFrameWithTime:timeForPage(4) andAlpha:0.0f]];
+
+        [self.animator addAnimation:[[unicornAlphaAnimation joinAnimation:unicornFrameAnimation] enabledWhen:^BOOL{
+            return self.unicornEnabled;
+        }]];
+        
+    }
+
     
     // Fade out the label by dragging on the last page
     IFTTTAlphaAnimation *labelAlphaAnimation = [IFTTTAlphaAnimation animationWithView:self.lastLabel];
@@ -177,6 +251,14 @@
 - (void)animatedScrollViewControllerDidEndDraggingAtEnd:(IFTTTAnimatedScrollViewController *)animatedScrollViewController
 {
     NSLog(@"Ended dragging at end of scrollview!");
+}
+
+- (void)animatedScrollViewController:(IFTTTAnimatedScrollViewController *)animatedScrollViewController
+                     didScrollToPage:(NSInteger)pageNumber
+{
+    if (pageNumber == 0) {
+        [self lockAnimation];
+    }
 }
 
 @end

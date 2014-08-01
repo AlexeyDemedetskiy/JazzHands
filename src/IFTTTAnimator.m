@@ -7,7 +7,7 @@
 //
 
 #import "IFTTTAnimator.h"
-#import "IFTTTAnimation.h"
+#import "IFTTTViewAnimation.h"
 
 @interface IFTTTAnimator ()
 
@@ -30,12 +30,12 @@
 
 - (void)animate:(NSInteger)time
 {
-    for (IFTTTAnimation *animation in self.animations) {
+    for (IFTTTAnimation* animation in self.animations) {
         [animation animate:time];
     }
 }
 
-- (void)addAnimation:(IFTTTAnimation *)animation
+- (void)addAnimation:(IFTTTAnimation* )animation
 {
     [self.animations addObject:animation];
 }

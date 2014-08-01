@@ -5,8 +5,8 @@
 //  Created by Vahur Roosimaa on 12/7/13.
 //
 
-#import "IFTTTAnimation.h"
+#import "IFTTTViewAnimation.h"
 
-@interface IFTTTAngleAnimation : IFTTTAnimation
+@interface IFTTTAngleAnimation : IFTTTViewAnimation
 
 @end

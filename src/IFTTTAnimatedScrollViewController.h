@@ -37,4 +37,13 @@
  */
 - (void)animatedScrollViewControllerDidEndDraggingAtEnd:(IFTTTAnimatedScrollViewController *)animatedScrollViewController;
 
+/**
+ * The user has released the scrollview on some page of the scrollview.'
+ *
+ * @param animatedScrollViewController the scroll view controller
+ * 
+ * @param pageNumber number of current visible page
+ */
+- (void)animatedScrollViewController:(IFTTTAnimatedScrollViewController *)animatedScrollViewController
+                     didScrollToPage:(NSInteger)pageNumber;
 @end
